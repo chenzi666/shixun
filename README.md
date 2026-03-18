@@ -392,7 +392,7 @@ logging.level.org.example.glw=warn
 如遇到问题或有更好的建议，请通过以下方式联系我们：
 
 - 提交 [Issue](https://github.com/your-username/glw/issues)
-- 发送邮件至：your-email@example.com
+- 发送邮件至：2897895906@qq.com
 
 ---
 
