@@ -371,8 +371,8 @@ logging.level.org.example.glw=warn
 
 ## 👥 开发团队
 
-- **开发者**：GLW Team
-- **联系方式**：your-email@example.com
+- **开发者**：未诚
+- **联系方式**：2897895906@qq.com
 
 ---
 
