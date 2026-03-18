@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.glw.mapper.HotelMapper">
+    
+    <resultMap id="HotelResultMap" type="org.example.glw.entity.Hotel">
+        <id column="hotel_id" property="hotelId"/>
+        <result column="name" property="name"/>
+        <result column="description" property="description"/>
+        <result column="address" property="address"/>
+        <result column="phone" property="phone"/>
+        <result column="star_level" property="starLevel"/>
+        <result column="min_price" property="minPrice"/>
+        <result column="max_price" property="maxPrice"/>
+        <result column="facilities" property="facilities"/>
+        <result column="images" property="images"/>
+        <result column="video_url" property="videoUrl"/>
+        <result column="longitude" property="longitude"/>
+        <result column="latitude" property="latitude"/>
+        <result column="score" property="score"/>
+        <result column="view_count" property="viewCount"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="category_id" property="categoryId"/>
+    </resultMap>
+    
+    <sql id="hotelColumns">
+        hotel_id, name, description, address, phone, star_level, min_price, max_price, facilities,
+        images, video_url, longitude, latitude, score, view_count, status, create_time, update_time, category_id
+    </sql>
+    
+    <select id="selectHotels" resultMap="HotelResultMap">
+        SELECT <include refid="hotelColumns"/>
+        FROM hotel
+        <where>
+            status = 1
+            <if test="categoryId != null">
+                AND category_id = #{categoryId}
+            </if>
+            <if test="minPrice != null">
+                AND min_price >= #{minPrice}
+            </if>
+            <if test="maxPrice != null">
+                AND max_price &lt;= #{maxPrice}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND (name LIKE CONCAT('%', #{keyword}, '%') OR description LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+        <choose>
+            <when test="sort != null and sort != '' and order != null and order != ''">
+                ORDER BY ${sort} ${order}
+            </when>
+            <otherwise>
+                ORDER BY hotel_id DESC
+            </otherwise>
+        </choose>
+        LIMIT #{offset}, #{size}
+    </select>
+    
+    <select id="countHotels" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM hotel
+        <where>
+            status = 1
+            <if test="categoryId != null">
+                AND category_id = #{categoryId}
+            </if>
+            <if test="minPrice != null">
+                AND min_price >= #{minPrice}
+            </if>
+            <if test="maxPrice != null">
+                AND max_price &lt;= #{maxPrice}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND (name LIKE CONCAT('%', #{keyword}, '%') OR description LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectById" resultMap="HotelResultMap">
+        SELECT <include refid="hotelColumns"/>
+        FROM hotel
+        WHERE hotel_id = #{hotelId} AND status = 1
+    </select>
+</mapper>

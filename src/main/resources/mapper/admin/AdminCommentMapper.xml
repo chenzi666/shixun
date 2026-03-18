@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.glw.mapper.admin.AdminCommentMapper">
+
+    <!-- 获取管理评价列表 -->
+    <select id="selectManageComments" resultType="org.example.glw.entity.Comment">
+        SELECT c.comment_id, c.user_id, c.product_id, c.product_type, c.score, c.content, 
+               c.images, c.create_time, c.order_item_id, c.status, u.username
+        FROM comments c
+        LEFT JOIN users u ON c.user_id = u.user_id
+        <where>
+            <if test="productType != null and productType != ''">
+                AND c.product_type = #{productType}
+            </if>
+            <if test="status != null">
+                AND c.status = #{status}
+            </if>
+        </where>
+        ORDER BY c.create_time DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <!-- 统计管理评价数量 -->
+    <select id="countManageComments" resultType="java.lang.Long">
+        SELECT COUNT(*) 
+        FROM comments c
+        <where>
+            <if test="productType != null and productType != ''">
+                AND c.product_type = #{productType}
+            </if>
+            <if test="status != null">
+                AND c.status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <!-- 更新评价 -->
+    <update id="updateById" parameterType="org.example.glw.entity.Comment">
+        UPDATE comments
+        <set>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        WHERE comment_id = #{commentId}
+    </update>
+
+    <!-- 根据ID获取评价 -->
+    <select id="selectById" resultType="org.example.glw.entity.Comment">
+        SELECT comment_id, user_id, product_id, product_type, score, content, images, create_time, order_item_id, status
+        FROM comments
+        WHERE comment_id = #{commentId}
+    </select>
+
+</mapper>

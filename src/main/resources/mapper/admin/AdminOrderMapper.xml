@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.glw.mapper.admin.AdminOrderMapper">
+
+    <!-- 获取管理订单列表 -->
+    <select id="selectManageOrders" resultType="org.example.glw.entity.Orders">
+        SELECT o.order_id, o.order_no, o.user_id, o.total_amount, o.actual_amount, 
+               o.payment_method, o.payment_status, o.order_status, o.create_time, 
+               o.pay_time, o.contact_name, o.contact_phone, o.remark,
+               u.username
+        FROM orders o
+        LEFT JOIN users u ON o.user_id = u.user_id
+        <where>
+            <if test="orderNo != null and orderNo != ''">
+                AND o.order_no LIKE CONCAT('%', #{orderNo}, '%')
+            </if>
+            <if test="username != null and username != ''">
+                AND u.username LIKE CONCAT('%', #{username}, '%')
+            </if>
+            <if test="orderStatus != null">
+                AND o.order_status = #{orderStatus}
+            </if>
+            <if test="startDate != null">
+                AND o.create_time >= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND o.create_time &lt;= #{endDate}
+            </if>
+        </where>
+        ORDER BY o.create_time DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <!-- 统计管理订单数量 -->
+    <select id="countManageOrders" resultType="java.lang.Long">
+        SELECT COUNT(*) 
+        FROM orders o
+        LEFT JOIN users u ON o.user_id = u.user_id
+        <where>
+            <if test="orderNo != null and orderNo != ''">
+                AND o.order_no LIKE CONCAT('%', #{orderNo}, '%')
+            </if>
+            <if test="username != null and username != ''">
+                AND u.username LIKE CONCAT('%', #{username}, '%')
+            </if>
+            <if test="orderStatus != null">
+                AND o.order_status = #{orderStatus}
+            </if>
+            <if test="startDate != null">
+                AND o.create_time >= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND o.create_time &lt;= #{endDate}
+            </if>
+        </where>
+    </select>
+
+    <!-- 获取订单详情 -->
+    <select id="selectById" resultType="org.example.glw.entity.Orders">
+        SELECT order_id, order_no, user_id, total_amount, actual_amount, 
+               payment_method, payment_status, order_status, create_time, 
+               pay_time, contact_name, contact_phone, remark
+        FROM orders
+        WHERE order_id = #{orderId}
+    </select>
+
+    <!-- 更新订单 -->
+    <update id="updateOrder" parameterType="org.example.glw.entity.Orders">
+        UPDATE orders
+        <set>
+            <if test="orderStatus != null">
+                order_status = #{orderStatus},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+        </set>
+        WHERE order_id = #{orderId}
+    </update>
+
+    <!-- 获取订单商品项列表 -->
+    <select id="selectOrderItemsByOrderId" resultType="org.example.glw.entity.OrderItem">
+        SELECT item_id, order_id, product_id, product_type, product_name, 
+               price, quantity, total_price, use_date, item_status
+        FROM order_items
+        WHERE order_id = #{orderId}
+    </select>
+
+</mapper>

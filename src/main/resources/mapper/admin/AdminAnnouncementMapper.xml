@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.glw.mapper.admin.AdminAnnouncementMapper">
+
+    <!-- 获取公告列表（管理员） -->
+    <select id="selectAnnouncements" resultType="org.example.glw.entity.Announcement">
+        SELECT announcement_id, title, content, publish_time, status, create_by, create_time, update_time
+        FROM announcements
+        ORDER BY publish_time DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <!-- 添加公告（管理员） -->
+    <insert id="insert" parameterType="org.example.glw.entity.Announcement" useGeneratedKeys="true" keyProperty="announcementId">
+        INSERT INTO announcements (title, content, publish_time, status, create_by, create_time)
+        VALUES (#{title}, #{content}, #{publishTime}, #{status}, #{createBy}, #{createTime})
+    </insert>
+
+    <!-- 更新公告（管理员） -->
+    <update id="updateById" parameterType="org.example.glw.entity.Announcement">
+        UPDATE announcements
+        <set>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="content != null and content != ''">
+                content = #{content},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="publishTime != null">
+                publish_time = #{publishTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        WHERE announcement_id = #{announcementId}
+    </update>
+
+    <!-- 删除公告（管理员） -->
+    <delete id="deleteById">
+        DELETE FROM announcements
+        WHERE announcement_id = #{announcementId}
+    </delete>
+
+</mapper>

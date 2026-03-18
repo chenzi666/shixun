@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.glw.mapper.PermissionMapper">
+
+    <!-- 获取权限列表 -->
+    <select id="selectPermissions" resultType="org.example.glw.entity.Permission">
+        SELECT permission_id, permission_name, permission_code, description, create_time
+        FROM permissions
+        ORDER BY permission_id ASC
+    </select>
+
+    <!-- 根据角色ID获取权限列表 -->
+    <select id="selectPermissionsByRoleId" resultType="org.example.glw.entity.Permission">
+        SELECT p.permission_id, p.permission_name, p.permission_code, p.description, p.create_time
+        FROM permissions p
+        INNER JOIN role_permissions rp ON p.permission_id = rp.permission_id
+        WHERE rp.role_id = #{roleId}
+        ORDER BY p.permission_id ASC
+    </select>
+
+</mapper>

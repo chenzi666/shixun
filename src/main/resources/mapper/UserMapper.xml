@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.glw.mapper.UserMapper">
+    
+    <resultMap id="UserResultMap" type="org.example.glw.entity.User">
+        <id column="user_id" property="userId"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="phone" property="phone"/>
+        <result column="email" property="email"/>
+        <result column="nickname" property="nickname"/>
+        <result column="avatar" property="avatar"/>
+        <result column="gender" property="gender"/>
+        <result column="register_time" property="registerTime"/>
+        <result column="last_login_time" property="lastLoginTime"/>
+        <result column="status" property="status"/>
+        <result column="role_id" property="roleId"/>
+    </resultMap>
+    
+    <sql id="userColumns">
+        user_id, username, password, phone, email, nickname, avatar, gender, register_time, last_login_time, status, role_id
+    </sql>
+    
+    <select id="selectByUsername" resultMap="UserResultMap">
+        SELECT <include refid="userColumns"/>
+        FROM user
+        WHERE username = #{username}
+    </select>
+    
+    <select id="selectByEmail" resultMap="UserResultMap">
+        SELECT <include refid="userColumns"/>
+        FROM user
+        WHERE email = #{email}
+    </select>
+    
+    <select id="selectByPhone" resultMap="UserResultMap">
+        SELECT <include refid="userColumns"/>
+        FROM user
+        WHERE phone = #{phone}
+    </select>
+    
+    <insert id="insert" useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO user (username, password, phone, email, nickname, avatar, gender, register_time, last_login_time, status, role_id)
+        VALUES (#{username}, #{password}, #{phone}, #{email}, #{nickname}, #{avatar}, #{gender}, #{registerTime}, #{lastLoginTime}, #{status}, #{roleId})
+    </insert>
+    
+    <update id="updateById">
+        UPDATE user
+        <set>
+            <if test="username != null and username != ''">username = #{username},</if>
+            <if test="password != null and password != ''">password = #{password},</if>
+            <if test="phone != null and phone != ''">phone = #{phone},</if>
+            <if test="email != null and email != ''">email = #{email},</if>
+            <if test="nickname != null and nickname != ''">nickname = #{nickname},</if>
+            <if test="avatar != null and avatar != ''">avatar = #{avatar},</if>
+            <if test="gender != null">gender = #{gender},</if>
+            <if test="registerTime != null">register_time = #{registerTime},</if>
+            <if test="lastLoginTime != null">last_login_time = #{lastLoginTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="roleId != null">role_id = #{roleId},</if>
+        </set>
+        WHERE user_id = #{userId}
+    </update>
+    
+    <select id="selectById" resultMap="UserResultMap">
+        SELECT <include refid="userColumns"/>
+        FROM user
+        WHERE user_id = #{userId}
+    </select>
+    
+    <select id="selectUsers" resultMap="UserResultMap">
+        SELECT <include refid="userColumns"/>
+        FROM user
+        <where>
+            <if test="username != null and username != ''">
+                AND username LIKE CONCAT('%', #{username}, '%')
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+        ORDER BY user_id DESC
+        LIMIT #{offset}, #{size}
+    </select>
+    
+    <select id="countUsers" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM user
+        <where>
+            <if test="username != null and username != ''">
+                AND username LIKE CONCAT('%', #{username}, '%')
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+    </select>
+</mapper>

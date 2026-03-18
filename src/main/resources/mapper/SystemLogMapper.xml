@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.glw.mapper.SystemLogMapper">
+
+    <!-- 插入系统日志 -->
+    <insert id="insert" parameterType="org.example.glw.entity.SystemLog" useGeneratedKeys="true" keyProperty="logId">
+        INSERT INTO sys_log (username, operation, ip, create_time, status)
+        VALUES (#{username}, #{operation}, #{ip}, #{createTime}, #{status})
+    </insert>
+
+    <!-- 获取系统日志列表 -->
+    <select id="selectSystemLogs" resultType="org.example.glw.entity.SystemLog">
+        SELECT log_id, username, operation, ip, create_time, status
+        FROM sys_log
+        <where>
+            <if test="username != null and username != ''">
+                AND username LIKE CONCAT('%', #{username}, '%')
+            </if>
+            <if test="startDateTime != null">
+                AND create_time >= #{startDateTime}
+            </if>
+            <if test="endDateTime != null">
+                AND create_time &lt;= #{endDateTime}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <!-- 统计系统日志数量 -->
+    <select id="countSystemLogs" resultType="java.lang.Long">
+        SELECT COUNT(*) 
+        FROM sys_log
+        <where>
+            <if test="username != null and username != ''">
+                AND username LIKE CONCAT('%', #{username}, '%')
+            </if>
+            <if test="startDateTime != null">
+                AND create_time >= #{startDateTime}
+            </if>
+            <if test="endDateTime != null">
+                AND create_time &lt;= #{endDateTime}
+            </if>
+        </where>
+    </select>
+
+</mapper>

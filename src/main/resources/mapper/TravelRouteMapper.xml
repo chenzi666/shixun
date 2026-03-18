@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.glw.mapper.TravelRouteMapper">
+    
+    <resultMap id="TravelRouteResultMap" type="org.example.glw.entity.TravelRoute">
+        <id column="route_id" property="routeId"/>
+        <result column="name" property="name"/>
+        <result column="description" property="description"/>
+        <result column="days" property="days"/>
+        <result column="price" property="price"/>
+        <result column="departure_place" property="departurePlace"/>
+        <result column="destination" property="destination"/>
+        <result column="includes" property="includes"/>
+        <result column="excludes" property="excludes"/>
+        <result column="notice" property="notice"/>
+        <result column="images" property="images"/>
+        <result column="video_url" property="videoUrl"/>
+        <result column="score" property="score"/>
+        <result column="view_count" property="viewCount"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="category_id" property="categoryId"/>
+    </resultMap>
+    
+    <sql id="routeColumns">
+        route_id, name, description, days, price, departure_place, destination, includes, excludes, 
+        notice, images, video_url, score, view_count, status, create_time, update_time, category_id
+    </sql>
+    
+    <select id="selectRoutes" resultMap="TravelRouteResultMap">
+        SELECT <include refid="routeColumns"/>
+        FROM travel_route
+        <where>
+            status = 1
+            <if test="categoryId != null">
+                AND category_id = #{categoryId}
+            </if>
+            <if test="days != null">
+                AND days = #{days}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND (name LIKE CONCAT('%', #{keyword}, '%') OR description LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+        <choose>
+            <when test="sort != null and sort != '' and order != null and order != ''">
+                ORDER BY ${sort} ${order}
+            </when>
+            <otherwise>
+                ORDER BY route_id DESC
+            </otherwise>
+        </choose>
+        LIMIT #{offset}, #{size}
+    </select>
+    
+    <select id="countRoutes" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM travel_route
+        <where>
+            status = 1
+            <if test="categoryId != null">
+                AND category_id = #{categoryId}
+            </if>
+            <if test="days != null">
+                AND days = #{days}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND (name LIKE CONCAT('%', #{keyword}, '%') OR description LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectById" resultMap="TravelRouteResultMap">
+        SELECT <include refid="routeColumns"/>
+        FROM travel_route
+        WHERE route_id = #{routeId} AND status = 1
+    </select>
+</mapper>
